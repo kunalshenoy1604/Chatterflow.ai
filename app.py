@@ -8,11 +8,15 @@ import pyttsx3
 import openai
 
 load_dotenv()
-
-openai.api_key = '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'
 engine = pyttsx3.init()
-engine.setProperty('rate', 150)
-engine.setProperty('volume', 0.9)
+rate=engine.getProperty('rate')
+engine.setProperty('rate', rate - 40)
+volume = engine.getProperty('volume')
+engine.setProperty('volume', volume + 0.3)
+
+voices=engine.getProperty('voices')
+engine.setProperty('voice',voices[1].id)
+
 
 r = sr.Recognizer()
 
@@ -88,7 +92,7 @@ def get_chatmodel_response(question):
         feedback_response = openai.Completion.create(
             engine="gpt-3.5-turbo-instruct",
             prompt=f"Provide feedback on the following text: \"{question}\"",
-            max_tokens=50
+            max_tokens=175
         )
 
         feedback = feedback_response.choices[0].text.strip()
@@ -116,7 +120,9 @@ if st.button("Speak Now"):
         st.write(feedback)
         st.subheader("Translation:")
         st.write(translation)
-        engine.say(response)
+        
+        full_speech_output=f"Response:{response}. Feedback:{feedback}. Translation:{translation}"
+        engine.say(full_speech_output)
         if hasattr(engine, '_inLoop') and engine._inLoop:
             engine.endLoop()
         engine.runAndWait()
@@ -129,8 +135,15 @@ if st.button("Ask the Question"):
     st.write(feedback)
     st.subheader("Translation:")
     st.write(translation)
+    
+    full_speech_output=f"Response:{response}. Feedback:{feedback}. Translation:{translation}"
+    engine.say(full_speech_output)
+    if hasattr(engine, '_inLoop') and engine._inLoop:
+        engine.endLoop()
+    engine.runAndWait()
 
 if 'openai.api_key' in st.session_state:
     del st.session_state['openai.api_key']
+
 
 
