@@ -1,6 +1,0 @@
-streamlit
-openai
-langchain
-dotenv
-SpeechRecognition
-pyttsx3
